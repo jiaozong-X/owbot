@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PLAYER_NAME}} - 强度分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #F8F6F2;
+            --surface:   #FFFFFF;
+            --border:    #E5DDD4;
+            --border-s:  #EDE8E1;
+            --t1:        #1C1917;
+            --t2:        #6B5C55;
+            --t3:        #A8968F;
+            --accent:    #D4713A;
+            --accent-bg: #FBF0E8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+            line-height: 1.5;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+        th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+            padding: 8px 10px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        th.r { text-align: right; }
+        th.c { text-align: center; }
+        td {
+            padding: 8px 10px;
+            font-size: 13px;
+            color: var(--t2);
+            border-bottom: 1px solid var(--border-s);
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: var(--bg); }
+        .lbl {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: var(--t1);
+            color: #F8F6F2;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body style="padding: 1rem 1rem;">
+<div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px;">
+
+    <!-- Header -->
+    <div style="text-align: center; padding: 4px 0 0;">
+        <h1 style="font-size: 1.4rem; font-weight: 700; color: var(--t1); letter-spacing: -0.03em; margin-bottom: 3px;">{{PLAYER_NAME}}</h1>
+        <p style="font-size: 12px; color: var(--t3);">强度趋势分析 · {{TIMESTAMP}}</p>
+    </div>
+
+    <!-- Summary Stats (JS populated) -->
+    <div id="summary-stats" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;"></div>
+
+    <!-- Chart -->
+    <div class="card" style="padding: 14px 16px;">
+        <div class="lbl" style="margin-bottom: 10px;">强度趋势图</div>
+        <div style="height: 220px;"><canvas id="strengthChart"></canvas></div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="overflow: hidden;">
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 36px;">#</th>
+                        <th class="c" style="width: 52px;">英雄</th>
+                        <th>地图</th>
+                        <th>对战 ID</th>
+                        <th>结果</th>
+                        <th class="r">我方均值</th>
+                        <th class="r">敌方均值</th>
+                        <th class="r">差值</th>
+                        <th>我方区间</th>
+                        <th>敌方区间</th>
+                        <th class="c">评分</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{TABLE_ROWS}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rank Distribution -->
+    <div class="card" style="padding: 12px 16px;">
+        <div class="lbl" style="margin-bottom: 10px;">段位分布</div>
+        <div>{{RANK_STATS}}</div>
+    </div>
+
+    <!-- Hero Stats & Best KDA (JS populated) -->
+    <div id="extra-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2px 0 4px;">
+        <span style="font-size: 11px; color: var(--t3);">守望先锋 2 · 强度分析 · 机器人反馈群 412275154</span>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.textContent = '已复制 · ' + text.substring(0, 18) + (text.length > 18 ? '…' : '');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        });
+    }
+
+    const labels     = {{LABELS}};
+    const teamData   = {{TEAM_DATA}};
+    const enemyData  = {{ENEMY_DATA}};
+    const diffData   = {{DIFF_DATA}};
+    const heroStats  = {{HERO_STATS_JSON}};
+    const bestKda    = {{BEST_KDA_JSON}};
+
+    // Summary stats
+    const wins    = labels.filter(l => l.includes('胜')).length;
+    const total   = labels.length;
+    const avgDiff = diffData.reduce((a, b) => a + b, 0) / total;
+
+    function mkCard(val, lbl, color) {
+        return `<div style="background:#fff;border:1px solid #E5DDD4;border-radius:10px;padding:10px 12px;text-align:center;">
+            <div style="font-size:18px;font-weight:700;color:${color};font-variant-numeric:tabular-nums;letter-spacing:-0.025em;line-height:1.1;">${val}</div>
+            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:#A8968F;margin-top:4px;">${lbl}</div>
+        </div>`;
+    }
+    document.getElementById('summary-stats').innerHTML =
+        mkCard(total, '分析场次', '#1C1917') +
+        mkCard(wins,  '胜　　利', '#2B7A3D') +
+        mkCard(total - wins, '失　　败', '#B91C1C') +
+        mkCard((wins / total * 100).toFixed(0) + '%', '胜　　率', '#D4713A') +
+        mkCard((avgDiff >= 0 ? '+' : '') + avgDiff.toFixed(2), '平均差值', avgDiff >= 0 ? '#D4713A' : '#A8968F');
+
+    // Chart
+    const ctx = document.getElementById('strengthChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: '我方平均段位',
+                    data: teamData,
+                    borderColor: '#D4713A',
+                    backgroundColor: 'rgba(212,113,58,0.07)',
+                    borderWidth: 2, tension: 0.35, fill: true,
+                    pointBackgroundColor: '#D4713A', pointRadius: 3, pointHoverRadius: 5
+                },
+                {
+                    label: '敌方平均段位',
+                    data: enemyData,
+                    borderColor: '#B91C1C',
+                    backgroundColor: 'rgba(185,28,28,0.05)',
+                    borderWidth: 2, tension: 0.35, fill: true,
+                    pointBackgroundColor: '#B91C1C', pointRadius: 3, pointHoverRadius: 5
+                },
+                {
+                    label: '差值',
+                    data: diffData,
+                    borderColor: '#2563EB',
+                    borderWidth: 1.5, tension: 0.35, fill: false,
+                    borderDash: [5, 3],
+                    pointBackgroundColor: '#2563EB', pointRadius: 3, pointHoverRadius: 5,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { labels: { color: '#A8968F', font: { size: 12, family: 'Inter' }, boxWidth: 10, boxHeight: 10, borderRadius: 3, useBorderRadius: true, padding: 18 } },
+                tooltip: { backgroundColor: '#1C1917', titleColor: '#F8F6F2', bodyColor: '#A8968F', borderColor: '#3D2B1F', borderWidth: 1, padding: 12, cornerRadius: 8 }
+            },
+            scales: {
+                y:  { type: 'linear', position: 'left',  title: { display: true, text: '段位权重', color: '#A8968F', font: { size: 11 } }, ticks: { color: '#A8968F', font: { size: 11 } }, grid: { color: '#EDE8E1' } },
+                y1: { type: 'linear', position: 'right', title: { display: true, text: '差值', color: '#A8968F', font: { size: 11 } }, ticks: { color: '#A8968F', font: { size: 11 } }, grid: { drawOnChartArea: false } },
+                x:  { ticks: { color: '#A8968F', font: { size: 10 }, maxRotation: 30 }, grid: { color: '#EDE8E1' } }
+            }
+        }
+    });
+    window._chartsReady = true;
+
+    // Extra stats: hero usage + best KDA match
+    let extraHtml = '';
+
+    // Hero stats card
+    if (heroStats && heroStats.length > 0) {
+        const heroRows = heroStats.map(h =>
+            `<div style="display:flex;justify-content:space-between;font-size:13px;color:#6B5C55;padding:4px 0;border-bottom:1px solid #EDE8E1;">
+                <span>${h.name || h.guid}</span>
+                <span style="font-weight:600;color:#1C1917;">${h.count} 场</span>
+            </div>`
+        ).join('');
+        extraHtml += `<div class="card" style="padding:14px 16px;">
+            <div class="lbl" style="margin-bottom:10px;">常用英雄（我方）</div>
+            ${heroRows}
+        </div>`;
+    }
+
+    // Best KDA match card
+    if (bestKda && bestKda.match_id) {
+        const resultColor = bestKda.result === '胜利' ? '#2B7A3D' : '#B91C1C';
+        extraHtml += `<div class="card" style="padding:14px 16px;">
+            <div class="lbl" style="margin-bottom:10px;">最高 KDA 场次</div>
+            <div style="font-size:18px;font-weight:700;color:#D4713A;letter-spacing:-0.025em;">${bestKda.team_avg_kda ? bestKda.team_avg_kda.toFixed(2) : '-'}</div>
+            <div style="font-size:11px;color:#A8968F;margin-top:2px;text-transform:uppercase;letter-spacing:0.06em;">我方平均 KDA</div>
+            <div style="margin-top:12px;font-size:13px;color:#6B5C55;">
+                <div>${bestKda.map_name || ''}</div>
+                <div style="color:${resultColor};font-weight:600;">${bestKda.result || ''}</div>
+            </div>
+        </div>`;
+    }
+
+    if (extraHtml) {
+        document.getElementById('extra-stats').innerHTML = extraHtml;
+    }
+</script>
+</body>
+</html>

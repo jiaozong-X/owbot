@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{PLAYER_NAME}} - 地图胜率</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #F8F6F2;
+            --surface:  #FFFFFF;
+            --border:   #E5DDD4;
+            --border-s: #EDE8E1;
+            --t1:       #1C1917;
+            --t2:       #6B5C55;
+            --t3:       #A8968F;
+            --accent:   #D4713A;
+            --win:      #2F9E44;
+            --lose:     #B91C1C;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: var(--bg); }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+            padding: 24px 28px 28px;
+            width: 560px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        /* 头部 */
+        .header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .player-name { font-size: 16px; font-weight: 700; }
+        .meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 3px;
+            align-items: center;
+        }
+        .lbl {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+        }
+        .mode-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent);
+            background: #FBF0E8;
+            border-radius: 4px;
+            padding: 1px 6px;
+        }
+        .total-num { font-size: 24px; font-weight: 700; line-height: 1; }
+
+        /* 地图行 */
+        .map-row {
+            padding: 11px 20px;
+            border-bottom: 1px solid var(--border-s);
+            display: grid;
+            grid-template-columns: 1fr 28px 28px 28px 120px;
+            align-items: center;
+            gap: 0 12px;
+        }
+        .map-row:last-child { border-bottom: none; }
+        .map-name { font-size: 13px; font-weight: 500; color: var(--t1); }
+        .num { font-size: 12px; text-align: right; }
+        .num-total { color: var(--t2); }
+        .num-win   { color: var(--win); font-weight: 600; }
+        .num-lose  { color: var(--lose); font-weight: 600; }
+
+        /* 胜率条 */
+        .bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .bar-track {
+            flex: 1;
+            height: 5px;
+            background: var(--border-s);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .bar-fill { height: 100%; border-radius: 3px; }
+        .bar-pct {
+            width: 32px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* 表 header */
+        .col-header {
+            padding: 8px 20px;
+            display: grid;
+            grid-template-columns: 1fr 28px 28px 28px 120px;
+            gap: 0 12px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        .col-header span {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+            text-align: right;
+        }
+        .col-header span:first-child { text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- 头部 -->
+    <div class="card">
+        <div class="header">
+            <div>
+                <div class="player-name">{{PLAYER_NAME}}</div>
+                <div class="meta">
+                    <span class="lbl">地图胜率</span>
+                    <span class="mode-tag">{{MODE_LABEL}}</span>
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <div class="total-num">{{TOTAL_MATCHES}}</div>
+                <div class="lbl" style="margin-top:3px;">总场次</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图列表 -->
+    <div class="card">
+        <div class="col-header">
+            <span>地图</span>
+            <span>场</span>
+            <span>胜</span>
+            <span>负</span>
+            <span style="text-align:left;padding-left:2px;">胜率</span>
+        </div>
+        {{MAP_ROWS}}
+    </div>
+    <div style="text-align:center;padding:6px 0 4px;font-size:11px;color:#A8968F;">守望先锋 2 · 地图统计 · 机器人反馈群 412275154</div>
+
+</body>
+</html>

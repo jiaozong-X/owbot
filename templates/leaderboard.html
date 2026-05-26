@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{TITLE}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F8F6F2;
+            --surface: #FFFFFF;
+            --border: #E5DDD4;
+            --border-soft: #EDE8E1;
+            --text-1: #1C1917;
+            --text-2: #6B5C55;
+            --text-3: #A8968F;
+            --accent: #D4713A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            padding: 28px 32px 32px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .lbl {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 11px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-3);
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th.r { text-align: right; }
+
+        td {
+            padding: 11px 14px;
+            font-size: 14px;
+            color: var(--text-2);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <div class="card" style="padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+        <div>
+            <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em;">{{TITLE}}</div>
+            <div style="margin-top: 6px; display: flex; gap: 14px; align-items: center;">
+                <span class="lbl">仅展示前 {{VISIBLE_COUNT}} 名</span>
+                <span style="font-size: 12px; color: var(--text-3);">超过 50 名时仅保留你的个人位置</span>
+            </div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 28px; font-weight: 800; color: var(--text-1); letter-spacing: -0.03em;">{{TOTAL_COUNT}}</div>
+            <div class="lbl" style="margin-top: 4px;">总参与人数</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 44px; text-align: center;">排名</th>
+                    <th>玩家</th>
+                    <th class="r">段位</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ROWS}}
+            </tbody>
+        </table>
+    </div>
+
+    {{SELF_SUMMARY}}
+
+    <div style="text-align:center;padding:6px 0 4px;font-size:11px;color:#A8968F;">数据源 2 路排行榜查询接口 412275154</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# ── 认证和运行时配置（含用户隐私数据）──────
+config/auth.json
+config/*.json
+config/*.bak
+
+# ── 运行时数据 ──────────────────────────────────────────
+logs/
+reports/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── 操作系统文件 ────────────────────────────────────────
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ── 编辑器 / IDE ────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── 临时测试文件 ────────────────────────────────────────
+test_*.html
+test_*.png
+*_report.html
+*_report.png
+match_strength_report.html
+streak_report.html
+weekly_summary.html
+herobillboard_report.html
+latest_match_report.html
+player_profile.html

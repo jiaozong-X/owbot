@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{PLAYER_NAME}} - 英雄全服排名</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #F8F6F2;
+            --surface:  #FFFFFF;
+            --border:   #E5DDD4;
+            --border-s: #EDE8E1;
+            --t1:       #1C1917;
+            --t2:       #6B5C55;
+            --t3:       #A8968F;
+            --accent:   #D4713A;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+            padding: 28px 32px 32px;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 12px 14px 10px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+        }
+        .section-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--t3);
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        th.r { text-align: right; }
+        td {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--t2);
+            border-bottom: 1px solid var(--border-s);
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: var(--bg) !important; }
+    </style>
+</head>
+<body>
+
+    <!-- 头部 -->
+    <div class="card" style="padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
+            <img src="{{PLAYER_ICON}}" alt="" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); background: var(--bg); flex: 0 0 auto;">
+            <div style="min-width: 0;">
+                <div style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em;">{{PLAYER_NAME}}</div>
+                <div style="margin-top: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3);">英雄地区排名</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 20px; text-align: right;">
+            <div>
+                <div style="font-size: 22px; font-weight: 700; color: var(--t1);">{{OPEN_COUNT}}</div>
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); margin-top: 2px;">自由选英雄</div>
+            </div>
+            <div>
+                <div style="font-size: 22px; font-weight: 700; color: var(--t1);">{{PRESET_COUNT}}</div>
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); margin-top: 2px;">固定英雄池</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自由选英雄排名 -->
+    <div class="card">
+        <div class="section-header">
+            <span class="section-title">自由选英雄（Open Queue）</span>
+            <span class="section-count">{{OPEN_COUNT}} 个英雄</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 32px;">#</th>
+                    <th>英雄</th>
+                    <th class="r">天梯分</th>
+                    <th class="r">地区排名</th>
+                    <th class="r">场次</th>
+                    <th class="r">胜率</th>
+                </tr>
+            </thead>
+            <tbody>{{OPEN_ROWS}}</tbody>
+        </table>
+    </div>
+
+    <!-- 固定英雄池排名 -->
+    <div class="card">
+        <div class="section-header">
+            <span class="section-title">固定英雄池（Role Queue）</span>
+            <span class="section-count">{{PRESET_COUNT}} 个英雄</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 32px;">#</th>
+                    <th>英雄</th>
+                    <th class="r">天梯分</th>
+                    <th class="r">地区排名</th>
+                    <th class="r">场次</th>
+                    <th class="r">胜率</th>
+                </tr>
+            </thead>
+            <tbody>{{PRESET_ROWS}}</tbody>
+        </table>
+    </div>
+    <div style="text-align:center;padding:6px 0 4px;font-size:11px;color:#A8968F;">守望先锋 2 · 英雄排名 · 机器人反馈群 412275154</div>
+
+</body>
+</html>

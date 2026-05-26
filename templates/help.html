@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>OW2 指令说明</title>
+    <style>
+        :root {
+            --bg: #f7f3ee;
+            --surface: #fffdfa;
+            --surface-soft: #faf6f1;
+            --border: #e7ddd2;
+            --border-soft: #efe6db;
+            --text: #1f1914;
+            --muted: #7f7065;
+            --accent: #c86a35;
+            --accent-soft: #fbefe4;
+            --good: #2f8f54;
+            --font-ui: "PingFang SC", "Microsoft YaHei UI", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+            --font-mono: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: var(--bg);
+        }
+
+        body {
+            width: 860px;
+            margin: 0 auto;
+            padding: 24px 24px 28px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-ui);
+        }
+
+        .hero,
+        .notice,
+        .section,
+        .footer {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .hero {
+            padding: 20px 22px 18px;
+            margin-bottom: 12px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .hero h1 {
+            margin-top: 10px;
+            font-size: 27px;
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: -0.035em;
+        }
+
+        .hero p {
+            margin-top: 8px;
+            max-width: 680px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .notice {
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            background: var(--surface-soft);
+        }
+
+        .notice-title {
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .notice p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .notice code,
+        .footer code,
+        .example {
+            font-family: var(--font-mono);
+        }
+
+        .notice code,
+        .footer code {
+            padding: 2px 5px;
+            border-radius: 6px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .section {
+            overflow: hidden;
+        }
+
+        .section-head {
+            padding: 13px 14px 11px;
+            background: var(--surface-soft);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .section-head h2 {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .section-head p {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .cmd {
+            padding: 12px 14px 11px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .cmd:last-child {
+            border-bottom: none;
+        }
+
+        .name {
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .desc {
+            margin-top: 5px;
+            color: var(--text);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .example {
+            margin-top: 6px;
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 7px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 10px;
+        }
+
+        .footer {
+            margin-top: 14px;
+            padding: 14px 16px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.85;
+        }
+
+        .footer strong {
+            color: var(--good);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="eyebrow">OW2 Helper</div>
+        <h1>OW2 战绩查询</h1>
+        <p>支持对局、近况、玩家资料、英雄统计、排行榜、资讯和订阅推送。绑定后，大部分命令都可以省略玩家名，直接查询自己。</p>
+        <div class="hero-meta">
+            <div class="meta-pill">默认模式：休闲</div>
+            <div class="meta-pill">玩家 / 英雄支持模式尾参</div>
+            <div class="meta-pill">订阅仅限私聊</div>
+        </div>
+    </div>
+
+    <div class="notice">
+        <div class="notice-title">模式参数</div>
+        <p><code>/查询</code>、<code>/玩家</code> 和 <code>/英雄</code> 都支持在命令结尾追加 <code>竞技</code> 或 <code>休闲</code>。例如 <code>/查询 守望先锋#5200 竞技</code>、<code>/英雄 守望先锋#5200 休闲</code>。如果已经绑定，也可以直接发送 <code>/查询 竞技</code> 或 <code>/玩家 休闲</code>。不写模式时默认按 <strong>休闲</strong> 查询。</p>
+    </div>
+
+    <div class="grid">
+        <div class="section">
+            <div class="section-head">
+                <h2>对局查询</h2>
+                <p>比赛与走势</p>
+            </div>
+            <div class="cmd">
+                <div class="name">/查询 玩家名#数字 [休闲/竞技]</div>
+                <div class="desc">查询近 12 场强度分析，结尾可指定模式，默认休闲。</div>
+                <div class="example">/查询 守望先锋#5200 竞技</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/竞技查询 玩家名#数字</div>
+                <div class="desc">查询近 12 场竞技强度分析，兼容旧写法。</div>
+                <div class="example">/竞技查询 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/休闲查询 玩家名#数字</div>
+                <div class="desc">查询近 12 场休闲强度分析，兼容旧写法。</div>
+                <div class="example">/休闲查询 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/休闲 玩家名#数字</div>
+                <div class="desc">查询最新一场休闲对局。</div>
+                <div class="example">/休闲 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/对局 [n] 玩家名#数字</div>
+                <div class="desc">查询第 n 场历史休闲对局，默认第 1 场。</div>
+                <div class="example">/对局 3 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/竞技 [n] 玩家名#数字</div>
+                <div class="desc">查询第 n 场历史竞技对局，默认第 1 场。</div>
+                <div class="example">/竞技 2 守望先锋#5200</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">
+                <h2>玩家数据</h2>
+                <p>资料与统计</p>
+            </div>
+            <div class="cmd">
+                <div class="name">/玩家 玩家名#数字 [赛季] [模式]</div>
+                <div class="desc">查询个人资料，赛季支持 <code>19</code>、<code>20</code>、<code>21</code>、<code>22</code>、<code>当前</code>，模式支持 <code>竞技</code> 或 <code>休闲</code>。</div>
+                <div class="example">/玩家 守望先锋#5200 22 竞技</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/赛季总结 玩家名#数字</div>
+                <div class="desc">查询国服赛季段位汇总（S19-S22），展示历史最高段位、各职责最佳段位及所有赛季详情。</div>
+                <div class="example">/赛季总结 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/总结 玩家名#数字 今日 休闲</div>
+                <div class="desc">生成今日/昨日/上周/本周战绩总结，支持 <code>休闲</code> 或 <code>竞技</code>，已绑定可省略玩家名。</div>
+                <div class="example">/总结 Irina#51777 上周 竞技</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/英雄 玩家名#数字 [模式]</div>
+                <div class="desc">查询英雄使用统计，模式可填 <code>竞技</code> 或 <code>休闲</code>，默认休闲。</div>
+                <div class="example">/英雄 守望先锋#5200 休闲</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/英雄排名 玩家名#数字</div>
+                <div class="desc">查询英雄全服排名和地区排名。</div>
+                <div class="example">/英雄排名 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/对比 玩家A#数字 玩家B#数字</div>
+                <div class="desc">对比两名玩家的战绩与段位。</div>
+                <div class="example">/对比 A#1234 B#5678</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">
+                <h2>账号与排行</h2>
+                <p>绑定与群聊功能</p>
+            </div>
+            <div class="cmd">
+                <div class="name">/绑定 玩家名#数字</div>
+                <div class="desc">绑定后可省略玩家名，直接查询自己。</div>
+                <div class="example">/绑定 守望先锋#5200</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/解绑</div>
+                <div class="desc">解除已绑定账号，需要二次确认。</div>
+                <div class="example">/解绑</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/排行</div>
+                <div class="desc">查看当前群内所有已绑定玩家的段位排行。</div>
+                <div class="example">/排行</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/分布</div>
+                <div class="desc">查看当前群内已绑定玩家的省份分布地图。</div>
+                <div class="example">/分布</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/全局排行</div>
+                <div class="desc">查看所有已绑定玩家的全局段位排行。</div>
+                <div class="example">/全局排行</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/全局分布</div>
+                <div class="desc">查看所有已绑定玩家的省份分布地图。</div>
+                <div class="example">/全局分布</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/帮助</div>
+                <div class="desc">显示当前这张图文帮助。</div>
+                <div class="example">/帮助</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">
+                <h2>资讯与订阅</h2>
+                <p>版本资讯与推送</p>
+            </div>
+            <div class="cmd">
+                <div class="name">/资讯</div>
+                <div class="desc">查看最新活动资讯。</div>
+                <div class="example">/资讯</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/调整</div>
+                <div class="desc">查看最新英雄调整和补丁摘要。</div>
+                <div class="example">/调整</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/订阅 玩家名#数字 模式</div>
+                <div class="desc">订阅战绩推送，模式可填 <code>休闲</code>、<code>竞技</code>、<code>全部</code>。</div>
+                <div class="example">/订阅 守望先锋#5200 全部</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/订阅</div>
+                <div class="desc">查看当前订阅内容。</div>
+                <div class="example">/订阅</div>
+            </div>
+            <div class="cmd">
+                <div class="name">/取消订阅</div>
+                <div class="desc">取消当前订阅。</div>
+                <div class="example">/取消订阅</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        玩家名格式：<strong>昵称#数字</strong>，例如 <code>守望先锋#5200</code>。<br>
+        绑定后，<code>/查询</code>、<code>/玩家</code>、<code>/英雄</code> 支持只发模式参数，例如 <code>/查询 竞技</code>、<code>/玩家 竞技</code>、<code>/英雄 休闲</code>。<br>
+        为兼容旧习惯，旧的竞技快捷命令仍可继续使用，但帮助页以后以新版写法为准。
+    </div>
+</body>
+</html>

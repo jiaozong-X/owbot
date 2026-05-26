@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>英雄调整</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #F8F6F2;
+            --surface:   #FFFFFF;
+            --border:    #E5DDD4;
+            --border-s:  #EDE8E1;
+            --t1:        #1C1917;
+            --t2:        #6B5C55;
+            --t3:        #A8968F;
+            --accent:    #D4713A;
+            --accent-bg: #FBF0E8;
+            --tank:      #F59E0B;
+            --damage:    #EF4444;
+            --support:   #22C55E;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: var(--bg); }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+            padding: 28px 32px 32px;
+            width: 860px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+        .header-date { font-size: 12px; color: var(--t3); margin-top: 2px; }
+        .header-sub { font-size: 12px; color: var(--t3); margin-left: auto; text-align: right; }
+
+        .intro-section {
+            background: var(--accent-bg);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--accent);
+        }
+        .intro-section p {
+            font-size: 13px;
+            color: var(--t2);
+            line-height: 1.6;
+        }
+
+        .sub-role-section { margin-bottom: 16px; }
+        .sub-role-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--t1);
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .sub-role-card {
+            background: var(--surface);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+        }
+        .sub-role-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .role-section { margin-bottom: 16px; }
+        .role-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            margin-bottom: 8px;
+        }
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .role-badge.tank { background: #FEF3C7; color: #B45309; }
+        .role-badge.damage { background: #FEE2E2; color: #B91C1C; }
+        .role-badge.support { background: #DCFCE7; color: #15803D; }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .hero-card {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-s);
+        }
+        .hero-card:last-child { border-bottom: none; }
+
+        .hero-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--t1);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hero-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .dev-note {
+            font-size: 12px;
+            color: var(--t3);
+            font-style: italic;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #FAFAF8;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .ability-block {
+            margin-bottom: 8px;
+        }
+        .ability-block:last-child { margin-bottom: 0; }
+        .ability-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .change-list {
+            padding-left: 14px;
+            margin: 0;
+        }
+        .change-list li {
+            font-size: 12px;
+            color: var(--t2);
+            line-height: 1.6;
+            margin-bottom: 4px;
+        }
+        .change-list li:last-child { margin-bottom: 0; }
+
+        .bugfix-section {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+        }
+        .bugfix-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .bugfix-list {
+            padding-left: 16px;
+            margin: 0;
+        }
+        .bugfix-list li {
+            font-size: 12px;
+            color: var(--t2);
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .no-data {
+            padding: 20px;
+            text-align: center;
+            color: var(--t3);
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--t3);
+            text-align: center;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <div class="header-title">守望先锋 · 英雄调整</div>
+            <div class="header-date">{{DATE}}</div>
+        </div>
+        <div class="header-sub">网易国服官网</div>
+    </div>
+
+    <!-- 英雄更新总说明 -->
+    {{HERO_UPDATE_INTRO}}
+
+    <!-- 副职责更新 -->
+    <div class="sub-role-section">
+        <div class="sub-role-header">副职责更新</div>
+        {{SUB_ROLE_UPDATES}}
+    </div>
+
+    <!-- 重装 -->
+    <div class="role-section">
+        <div class="role-header">
+            <span class="role-badge tank">{{ROLE_TANK_LABEL}}</span>
+        </div>
+        <div class="card">
+            {{ROLE_TANK}}
+            <div class="no-data" style="display: none;">暂无调整</div>
+        </div>
+    </div>
+
+    <!-- 输出 -->
+    <div class="role-section">
+        <div class="role-header">
+            <span class="role-badge damage">{{ROLE_DAMAGE_LABEL}}</span>
+        </div>
+        <div class="card">
+            {{ROLE_DAMAGE}}
+            <div class="no-data" style="display: none;">暂无调整</div>
+        </div>
+    </div>
+
+    <!-- 支援 -->
+    <div class="role-section">
+        <div class="role-header">
+            <span class="role-badge support">{{ROLE_SUPPORT_LABEL}}</span>
+        </div>
+        <div class="card">
+            {{ROLE_SUPPORT}}
+            <div class="no-data" style="display: none;">暂无调整</div>
+        </div>
+    </div>
+
+    <!-- 错误修复 -->
+    <div class="bugfix-section">
+        <div class="bugfix-title">错误修复</div>
+        <ul class="bugfix-list">
+            {{BUGFIXES}}
+        </ul>
+    </div>
+
+    <div class="footer">
+        数据来源：<a href="https://ow.blizzard.cn/news/patch-notes/live/">ow.blizzard.cn</a> &nbsp;·&nbsp; 机器人反馈群 412275154
+    </div>
+
+</body>
+</html>

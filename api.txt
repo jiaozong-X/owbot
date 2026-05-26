@@ -1,0 +1,126 @@
+项目接口清单
+
+一、业务数据接口（Overwatch 2 数据）
+
+1. 网易 OW2 数据服务
+- 域名: https://datamsapi.ds.163.com
+
+- POST https://datamsapi.ds.163.com/v1/a19ld5tool/searchBnetAccount
+  用途: 搜索玩家，获取 customerToken、bnetId、昵称、头像、称号、等级、游戏时长
+  代码位置: ow2/client.py -> search_player()
+
+- GET https://datamsapi.ds.163.com/v1/a19ld5tool/customer/queryMatchList
+  用途: 获取玩家对局列表
+  代码位置: ow2/client.py -> get_match_list()
+
+- GET https://datamsapi.ds.163.com/v1/a19ld5tool/customer/queryMatchInfo
+  用途: 获取单场对局详情
+  代码位置: ow2/client.py -> get_match_info()
+
+- GET https://datamsapi.ds.163.com/v1/a19ld5tool/customer/queryCountInfo
+  用途: 获取玩家统计总览、分路数据、英雄使用数据、行为数据
+  代码位置: ow2/client.py -> get_count_info()
+
+- GET https://datamsapi.ds.163.com/v1/a19ld5tool/getBannedHeroes
+  用途: 获取当前被禁用英雄列表
+  代码位置: ow2/client.py -> get_banned_heroes()
+
+- GET https://datamsapi.ds.163.com/v1/a19ld5tool/billboard/customGetUserHeroBillboard
+  用途: 获取玩家英雄榜数据
+  代码位置: ow2/client.py -> get_hero_billboard()
+
+2. 网易英雄静态配置
+
+- GET https://s.166.net/config/ds_ow/ow_hero_attr.json
+  用途: 获取 heroGuid -> heroName 映射
+  代码位置: ow2/client.py -> fetch_hero_guid_names()
+
+- GET https://s.166.net/config/ds_ow/ow_hero_config.json
+  用途: 获取英雄配置、角色类型、英雄名称、图标 URL
+  代码位置:
+  - ow2/client.py -> fetch_hero_config()
+  - ow2/news.py -> get_hero_icons()
+
+3. 暴雪补丁/新闻页面
+
+- GET https://ow.blizzard.cn/news/patch-notes/live/
+  用途: 补丁公告来源主页
+  代码位置: ow2/news.py 注释与模板引用
+
+- GET https://ow.blizzard.cn/news/patch-notes/live/{year}/{month}/
+  用途: 按当前年月抓取新闻/补丁页面 HTML
+  代码位置:
+  - ow2/news.py -> get_news_url()
+  - ow2/news.py -> fetch_page()
+
+4. 动态图片资源
+
+- GET <icon_url>
+  用途: 拉取英雄头像/图标并转成 base64 data URI，用于渲染图片
+  来源:
+  - ow_hero_config.json 中的 icon 字段
+  - 对局详情中的 heroIcon 字段
+  代码位置: ow2/client.py -> url_to_data_uri()
+
+二、本地通信接口
+
+1. QQ 机器人 WebSocket
+
+- WS ws://127.0.0.1:3001
+  用途: 连接 NapCat 正向 WebSocket
+  代码位置:
+  - config.py -> WS_URL
+  - bot.py 使用 websockets 连接
+
+2. 微信 WebSocket
+
+- WS ws://127.0.0.1:7778
+  用途: 连接微信侧正向 WebSocket
+  代码位置:
+  - config.py -> WX_WS_URL
+  - bot.py 使用 websockets 连接
+
+3. Chrome DevTools 本地调试接口
+
+- GET http://127.0.0.1:{port}/json/list
+  用途: 获取 Chrome 当前 tab 的 webSocketDebuggerUrl
+  代码位置: _screenshot_worker.py -> get_ws_url()
+
+- WS <webSocketDebuggerUrl>
+  用途: 通过 CDP 控制 Chrome 截图
+  调用的方法:
+  - Emulation.setDeviceMetricsOverride
+  - Page.navigate
+  - Runtime.evaluate
+  - Page.captureScreenshot
+  代码位置: _screenshot_worker.py -> cdp_request()
+
+三、模板依赖的外部资源
+
+- GET https://cdn.tailwindcss.com
+  用途: 页面模板加载 Tailwind CDN
+  代码位置:
+  - templates/match.html
+  - templates/strength.html
+
+- GET https://cdn.jsdelivr.net/npm/chart.js
+  用途: 页面模板加载 Chart.js
+  代码位置: templates/strength.html
+
+- GET https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap
+  用途: 页面模板加载 Inter 字体 CSS
+  代码位置:
+  - templates/herobillboard.html
+  - templates/herostats.html
+  - templates/leaderboard.html
+  - templates/mapstats.html
+  - templates/match.html
+  - templates/news.html
+  - templates/patchnotes.html
+  - templates/strength.html
+  - ow2/compare.py
+  - ow2/profile.py
+
+说明
+- 上面已包含项目代码里明确写死或直接拼接出来的 HTTP / WebSocket 接口。
+- 其中 icon_url 和 webSocketDebuggerUrl 属于运行时动态接口，代码不会写死完整地址，但项目会实际访问。

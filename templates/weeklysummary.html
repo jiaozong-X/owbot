@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{PLAYER_NAME}} - 总结</title>
+    <style>
+        :root {
+            --bg:#F8F6F2; --surface:#FFFFFF; --line:#E4D8CC; --soft:#EFE7DE;
+            --t1:#1C1917; --t2:#665850; --t3:#A8968F; --accent:#D4713A;
+            --win:#2F9E44; --loss:#B91C1C;
+        }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        html, body { background:var(--bg); }
+        body {
+            width:900px; margin:0 auto; padding:26px 30px 34px;
+            color:var(--t1); font-family:"Inter","Microsoft YaHei",sans-serif;
+        }
+        .card { background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+        .hero {
+            display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:24px; align-items:center;
+            padding:24px 26px; margin-bottom:14px;
+            background:linear-gradient(135deg,#FFFFFF 0%,#FBF0E8 100%);
+        }
+        .identity { display:flex; align-items:center; gap:16px; min-width:0; }
+        .avatar { width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid #FFF; box-shadow:0 0 0 1px var(--line); background:var(--bg); }
+        .name { font-size:25px; font-weight:900; line-height:1; }
+        .meta { margin-top:7px; color:var(--t3); font-size:10px; font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
+        .tag { margin-left:7px; padding:2px 7px; border-radius:4px; background:#FFF; color:var(--accent); border:1px solid #F0D8C8; }
+        .sig { margin-top:10px; color:var(--t2); font-size:13px; }
+        .top-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; text-align:center; }
+        .top-stats div { min-width:0; padding:11px 8px; border-radius:10px; background:rgba(255,255,255,.66); border:1px solid rgba(228,216,204,.72); }
+        .top-stats b { display:block; font-size:24px; line-height:1; white-space:nowrap; }
+        .top-stats span { display:block; margin-top:7px; color:var(--t3); font-size:10px; font-weight:850; }
+        .main { display:grid; grid-template-columns:1.18fr .82fr; gap:14px; margin-bottom:14px; }
+        .section-title {
+            padding:12px 15px 9px; background:var(--bg); border-bottom:1px solid var(--line);
+            color:var(--t3); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase;
+        }
+        .timeline { padding:14px 16px 16px; display:grid; gap:11px; }
+        .day-line {
+            display:grid; grid-template-columns:86px 1fr 78px; gap:12px; align-items:center;
+            padding:7px 0; border-bottom:1px solid var(--soft);
+        }
+        .day-line:last-child { border-bottom:0; }
+        .day-head strong { display:block; font-size:13px; }
+        .day-head span { display:block; margin-top:4px; color:var(--t3); font-size:10px; }
+        .dots { display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+        .dots i { width:9px; height:9px; border-radius:50%; display:block; box-shadow:0 0 0 1px rgba(28,25,23,.08); }
+        .dots i.win { background:var(--win); } .dots i.loss { background:var(--loss); }
+        .day-range { color:var(--t3); font-size:10px; text-align:right; }
+        .spotlight { display:grid; gap:10px; padding:13px; }
+        .spot { padding:14px; border:1px solid var(--soft); border-radius:10px; background:#FFFDFC; }
+        .spot span { display:block; color:var(--t3); font-size:10px; font-weight:850; letter-spacing:.06em; text-transform:uppercase; }
+        .spot b { display:block; margin-top:6px; font-size:24px; color:var(--accent); line-height:1; }
+        .spot em { display:block; margin-top:6px; color:var(--t2); font-size:11px; font-style:normal; }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .wide { grid-column:1 / -1; }
+        .hero-list { padding:12px; display:grid; gap:9px; }
+        .hero-row {
+            display:grid; grid-template-columns:42px 1fr 42px; gap:10px; align-items:center;
+            padding:9px; border:1px solid var(--soft); border-radius:10px; background:#FFFDFC;
+        }
+        .hero-row img, .hero-row i, .mate-card img, .mate-card i, .highlight img, .highlight i {
+            width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid var(--line); background:var(--bg);
+        }
+        .hero-row strong { display:block; font-size:13px; }
+        .hero-row span { display:block; margin-top:4px; color:var(--t3); font-size:10px; }
+        .hero-row em { display:block; height:5px; margin-top:7px; border-radius:999px; background:var(--soft); overflow:hidden; }
+        .hero-row em i { display:block; height:100%; border:0; border-radius:999px; background:var(--accent); }
+        .hero-row b { color:var(--t2); font-size:12px; text-align:right; }
+        .other { display:flex; gap:6px; align-items:center; padding:0 12px 13px; }
+        .other img { width:24px; height:24px; border-radius:6px; border:1px solid var(--line); object-fit:cover; }
+        .other span { color:var(--t3); font-size:10px; font-weight:800; }
+        .map-list { padding:12px 14px 14px; display:grid; gap:10px; }
+        .map-row { display:grid; grid-template-columns:1fr 42px 46px; gap:12px; align-items:center; }
+        .map-row strong { display:block; font-size:12px; }
+        .map-row em { display:block; height:6px; margin-top:6px; border-radius:999px; background:var(--soft); overflow:hidden; }
+        .map-row em i { display:block; height:100%; border-radius:999px; background:var(--accent); }
+        .map-row b, .map-row span { color:var(--t2); font-size:11px; text-align:right; }
+        .mate-grid { padding:12px; display:grid; grid-template-columns:repeat(5,1fr); gap:9px; }
+        .mate-card { min-width:0; padding:10px 8px; border:1px solid var(--soft); border-radius:10px; background:#FFFDFC; text-align:center; }
+        .mate-card img, .mate-card i { width:38px; height:38px; border-radius:50%; }
+        .mate-card strong { display:block; margin-top:7px; font-size:10px; color:var(--t1); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .mate-card span { display:block; margin-top:4px; color:var(--t3); font-size:9px; }
+        .calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; padding:12px; }
+        .cal { min-height:58px; border-radius:9px; padding:8px; border:1px solid var(--soft); background:var(--bg); }
+        .cal.good { background:#EAF7EF; } .cal.mid { background:#FBF0E8; } .cal.bad { background:#FCECEC; }
+        .cal b, .cal span, .cal em { display:block; }
+        .cal b { font-size:11px; } .cal span, .cal em { margin-top:4px; color:var(--t2); font-size:10px; font-style:normal; }
+        .highlights { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:12px; }
+        .highlight { min-width:0; border:1px solid var(--soft); border-radius:10px; padding:10px; background:#FFFDFC; }
+        .highlight img, .highlight i { width:34px; height:34px; }
+        .highlight strong { display:block; margin-top:7px; font-size:12px; }
+        .highlight span, .highlight em { display:block; margin-top:4px; color:var(--t3); font-size:10px; font-style:normal; }
+        .empty { padding:14px; color:var(--t3); font-size:12px; text-align:center; }
+        .footer { text-align:center; padding:13px 0 4px; color:var(--t3); font-size:11px; }
+    </style>
+</head>
+<body>
+    <div class="card hero">
+        <div class="identity">
+            <img class="avatar" src="{{PLAYER_ICON}}" alt="">
+            <div>
+                <div class="name">{{PLAYER_NAME}}</div>
+                <div class="meta">{{PERIOD_NAME}} · {{PERIOD_LABEL}} <span class="tag">{{MODE_LABEL}}</span></div>
+                <div class="sig">{{SIGNATURE}}</div>
+            </div>
+        </div>
+        <div class="top-stats">{{TOP_STATS}}</div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="section-title">每日胜负走势</div>
+            <div class="timeline">{{TIMELINE}}</div>
+        </div>
+        <div class="card">
+            <div class="section-title">本周高光</div>
+            <div class="spotlight">{{HIGHLIGHT_STATS}}</div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="section-title">常用英雄 Top 5</div>
+            <div class="hero-list">{{COMMON_HEROES}}</div>
+            <div class="other"><span>其他</span>{{OTHER_HEROES}}</div>
+        </div>
+        <div class="card">
+            <div class="section-title">地图 Top 10</div>
+            <div class="map-list">{{MAP_ROWS}}</div>
+        </div>
+        <div class="card wide">
+            <div class="section-title">常见队友</div>
+            <div class="mate-grid">{{TEAMMATE_ROWS}}</div>
+        </div>
+        <div class="card">
+            <div class="section-title">胜率晴雨表</div>
+            <div class="calendar">{{CALENDAR}}</div>
+        </div>
+        <div class="card">
+            <div class="section-title">代表对局</div>
+            <div class="highlights">{{HIGHLIGHT_MATCHES}}</div>
+        </div>
+    </div>
+    <div class="footer">守望先锋 2 · 总结 Demo · 拉取到第 {{PAGES_USED}} 页</div>
+</body>
+</html>
